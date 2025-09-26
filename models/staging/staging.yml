@@ -1,0 +1,15 @@
+version: 2
+
+models:
+  - name: stg_orders
+    description: "Orders joined to customer with derived fields."
+    columns:
+      - name: order_key
+        description: "TPCH o_orderkey"
+        tests: [not_null, unique]   # required by the assessment
+      - name: cust_key
+        description: "TPCH o_custkey"
+      - name: order_year
+        description: "Year extracted from order_date"
+      - name: total_price
+        description: "TPCH total price from orders"
