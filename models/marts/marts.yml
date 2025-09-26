@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: customer_revenue
+    description: "Total revenue per customer from TPCH line items."
+    columns:
+      - name: cust_key
+        description: "TPCH c_custkey"
+        tests: [not_null]   # required by the assessment
+      - name: customer_name
+        description: "TPCH c_name"
+      - name: total_revenue
+        description: "Σ l_extendedprice * (1 - l_discount)"
+        
+  - name: customer_revenue_by_year
+    description: "Aggregated revenue per customer per year"
+    columns:
+      - name: cust_key
+        description: "Customer key"
+        tests: [not_null]
+      - name: order_year
+        description: "Year of the order"
+        tests: [not_null]
+      - name: total_revenue
+        description: "Total revenue for the year"
+
+  - name: customer_revenue_by_nation
+    description: "Revenue per customer broken down by nation"
+    columns:
+      - name: cust_key
+        description: "Customer key"
+        tests: [not_null]
+      - name: nation_name
+        description: "Nation name"
+        tests: [not_null]
+      - name: order_revenue
+        description: "Total revenue from all lineitems"
