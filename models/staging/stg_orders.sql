@@ -15,7 +15,8 @@ select
   o.o_orderpriority    as order_priority,
   o.o_clerk            as clerk,
   o.o_shippriority     as ship_priority,
-  o.o_comment          as comment
+  o.o_comment          as comment,
+  c.c_nationkey        as nation_key
 from orders o
 join customers c
   on o.o_custkey = c.c_custkey

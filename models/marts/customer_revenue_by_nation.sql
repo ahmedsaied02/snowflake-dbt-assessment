@@ -1,32 +1,49 @@
-with orders as (
-    select o_orderkey, o_custkey
-    from {{ source('tpch', 'orders') }}
+with stg_orders as (
+    select *
+    from {{ ref('stg_orders') }}
 ),
+
 lineitem as (
-    select l_orderkey, l_extendedprice, l_discount
+    select 
+        l_orderkey, 
+        l_extendedprice, 
+        l_discount
     from {{ source('tpch', 'lineitem') }}
 ),
-customer as (
-    select c_custkey, c_name, c_nationkey
-    from {{ source('tpch', 'customer') }}
-),
+
 nation as (
-    select n_nationkey, n_name as nation_name
+    select 
+        n_nationkey, 
+        n_name as nation_name
     from {{ source('tpch', 'nation') }}
 ),
+
+-- ✅ Deduplicate customers
+customers as (
+    select distinct
+        cust_key,
+        customer_name,
+        nation_key
+    from stg_orders
+),
+
 revenue_per_order as (
     select
-        o.o_custkey as cust_key,
+        o.cust_key,
         sum(l.l_extendedprice * (1 - l.l_discount)) as order_revenue
-    from orders o
-    join lineitem l on l.l_orderkey = o.o_orderkey
+    from stg_orders o
+    join lineitem l 
+      on l.l_orderkey = o.order_key
     group by 1
 )
+
 select
-    c.c_custkey   as cust_key,
-    c.c_name      as customer_name,
+    c.cust_key,
+    c.customer_name,
     n.nation_name,
     r.order_revenue
 from revenue_per_order r
-join customer c on c.c_custkey = r.cust_key
-join nation n on c.c_nationkey = n.n_nationkey
+join customers c 
+  on c.cust_key = r.cust_key
+join nation n 
+  on c.nation_key = n.n_nationkey
